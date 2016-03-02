@@ -1,0 +1,4 @@
+{
+  "graphs_root":"/var/www/default/bp/",
+  "rrd_file":"/var/www/default/bp/bp.rrd"
+}
