@@ -1,0 +1,2 @@
+pyspeedtest ~= 1.2
+python-rrdtool ~= 1.4
