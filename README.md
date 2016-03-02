@@ -2,6 +2,8 @@
 
 Test your available download bandwidth with speedtest.net and generate graphs with rrdtool
 
+![alt tag](https://cloud.githubusercontent.com/assets/11945268/13462460/d36821da-e087-11e5-9ab6-528deb2a82bf.png)
+
 ## Requirements
 
 - pyspeedtest: https://pypi.python.org/pypi/pyspeedtest/1.2
