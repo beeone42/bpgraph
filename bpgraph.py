@@ -1,4 +1,5 @@
-import pyspeedtest, os, sys, json, rrdtool, tempfile
+#!/usr/bin/env python
+import pyspeedtest, os, sys, json, rrdtool, tempfile, shutil
 
 def open_and_load_config(fname):
     if os.path.exists(fname):
@@ -25,11 +26,38 @@ def check_files(config):
                        'RRA:AVERAGE:0.5:288:366'
                        )
         print "rrd_file [%s] created." % (config['rrd_file'])
+    if not os.path.exists(config['graphs_root'] + '/index.html'):
+        print "index [%s]/index.html doesn't exist, we need to create it..." % (config['graphs_root'])
+        shutil.copyfile('index.html', config['graphs_root'] + '/index.html')
 
-config = open_and_load_config("config.json")
-check_files(config)
-speedtest = pyspeedtest.SpeedTest()
-speed = speedtest.download()
-print speed
-rrdtool.update(str(config['rrd_file']), 'N:' + str(speed * 1000.0))
+def update_rrd(config, speed):
+    rrdtool.update(str(config['rrd_file']), 'N:' + str(speed))
 
+def graph_rrd(config, inter, suffix):
+    rrdtool.graph(
+        str(config['graphs_root']) + 'bp' + suffix + '.png',
+        'COMMENT:bp' + suffix + '    ',
+        '-E', '-w', '480', '-h', '180', '--step', '300',
+        '--start', 'now-' + inter, '--end', 'now',
+        'DEF:occupees=' + str(config['rrd_file']) + ':nb:AVERAGE',
+        'CDEF:div=occupees,4,/',
+        'AREA:div#FFFF00',
+        'AREA:div#FFC020::STACK',
+        'AREA:div#FF8040::STACK',
+        'AREA:div#FF4020::STACK',
+        'LINE2:occupees#FF0000:B/s'
+        )
+
+if __name__ == '__main__':
+    os.chdir(os.path.dirname(sys.argv[0]))
+    config = open_and_load_config("config.json")
+    check_files(config)
+    speedtest = pyspeedtest.SpeedTest()
+    speed = speedtest.download()
+    print speed
+    update_rrd(config, speed)
+    graph_rrd(config, '8h', '')
+    graph_rrd(config, '1d', '-day')
+    graph_rrd(config, '1w', '-week')
+    graph_rrd(config, '31d', '-month')
+    graph_rrd(config, '1y', '-year')
