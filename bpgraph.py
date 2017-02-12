@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import pyspeedtest, os, sys, json, rrdtool, tempfile, shutil
+import requests, time, pyspeedtest, os, sys, json, rrdtool, tempfile, shutil
 
 def open_and_load_config(fname):
     if os.path.exists(fname):
@@ -48,12 +48,26 @@ def graph_rrd(config, inter, suffix):
         'LINE2:occupees#FF0000:B/s'
         )
 
+def get_speed(config):
+    if (config['url'] == "speedtest"):
+        speedtest = pyspeedtest.SpeedTest()
+        speed = speedtest.download()
+    else:
+        start = time.clock()
+        r = requests.get(config['url'], stream = False)
+        end = time.clock()
+        l = r.headers.get('content-length')
+        t = end - start
+        if (l is None) or (t == 0):
+            return 0
+        speed = int(l) / t
+    return speed
+
 if __name__ == '__main__':
     os.chdir(os.path.dirname(sys.argv[0]))
     config = open_and_load_config("config.json")
     check_files(config)
-    speedtest = pyspeedtest.SpeedTest()
-    speed = speedtest.download()
+    speed = get_speed(config)
     print speed
     update_rrd(config, speed)
     graph_rrd(config, '8h', '')

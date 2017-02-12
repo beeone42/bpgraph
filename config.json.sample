@@ -1,5 +1,5 @@
 {
     "graphs_root":"/root/bpgraph-url/",
     "rrd_file":"/root/bpgraph-url/bp.rrd",
-    "url":"speedtest"
+    "url":"http://ping.online.net/100Mo.dat"
 }
