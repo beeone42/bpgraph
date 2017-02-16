@@ -54,7 +54,7 @@ def get_speed(config):
         speed = speedtest.download()
     else:
         start = time.clock()
-        r = requests.get(config['url'], stream = False)
+        r = requests.get(config['url'], stream = False, timeout=1)
         end = time.clock()
         l = r.headers.get('content-length')
         t = end - start
