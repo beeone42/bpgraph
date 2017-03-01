@@ -1,5 +1,5 @@
 {
     "graphs_root":"/var/www/bp/",
     "rrd_file":"/var/www/bp/bp.rrd",
-    "url":"speedtest"
+    "url":"http://ipv4.download.thinkbroadband.com/50MB.zip"
 }

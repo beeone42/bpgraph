@@ -1,5 +1,0 @@
-{
-    "graphs_root":"/root/bpgraph-url/",
-    "rrd_file":"/root/bpgraph-url/bp.rrd",
-    "url":"speedtest"
-}
