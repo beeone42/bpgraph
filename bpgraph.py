@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import requests, time, pyspeedtest, os, sys, json, rrdtool, tempfile, shutil
+import requests, time, pyspeedtest, os, sys, json, rrdtool, tempfile, shutil, subprocess
 
 def open_and_load_config(fname):
     if os.path.exists(fname):
@@ -48,11 +48,19 @@ def graph_rrd(config, inter, suffix):
         'LINE2:occupees#FF0000:B/s'
         )
 
+def iperf(config):
+    tmp = subprocess.check_output(["iperf", "-c", config['iperf_srv'], "-p", config['iperf_port'], "-t", "10", "-y", "C"])
+    res = tmp.split(',')[-1].strip()
+    return res
+
 def get_speed(config):
+    speed = 0
+    if (config['url'] == "iperf"):
+        speed = iperf(config)
     if (config['url'] == "speedtest"):
         speedtest = pyspeedtest.SpeedTest()
         speed = speedtest.download()
-    else:
+    if (speed == 0):
         start = time.clock()
         r = requests.get(config['url'], stream = False, timeout=1)
         end = time.clock()

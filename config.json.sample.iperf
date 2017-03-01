@@ -1,0 +1,7 @@
+{
+    "graphs_root":"/var/www/bp/",
+    "rrd_file":"/var/www/bp/bp.rrd",
+    "url":"iperf",
+    "iperf_srv":"speedtest.serverius.net",
+    "iperf_port":"5001"
+}
