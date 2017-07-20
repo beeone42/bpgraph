@@ -1,0 +1,7 @@
+{
+    "graphs_root":"/var/www/bp/",
+    "rrd_file":"/var/www/bp/bp.rrd",
+    "url":"ping",
+    "ping_host":"8.8.8.8",
+    "ping_count":"10"
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import requests, time, pyspeedtest, os, sys, json, rrdtool, tempfile, shutil, subprocess
+import requests, time, pyspeedtest, os, sys, json, rrdtool, tempfile, shutil, subprocess, pyping
 
 def open_and_load_config(fname):
     if os.path.exists(fname):
@@ -48,6 +48,12 @@ def graph_rrd(config, inter, suffix):
         'LINE2:occupees#FF0000:B/s'
         )
 
+def ping(config):
+    c = int(config['ping_count'])
+    r =  pyping.ping('8.8.8.8', count = c)
+    res = c - r.packet_lost
+    return res
+
 def iperf(config):
     tmp = subprocess.check_output(["iperf", "-c", config['iperf_srv'], "-p", config['iperf_port'], "-t", "10", "-y", "C"])
     res = tmp.split(',')[-1].strip()
@@ -55,11 +61,16 @@ def iperf(config):
 
 def get_speed(config):
     speed = 0
+    if (config['url'] == "ping"):
+        speed = ping(config)
+        return speed
     if (config['url'] == "iperf"):
         speed = iperf(config)
+        return speed
     if (config['url'] == "speedtest"):
         speedtest = pyspeedtest.SpeedTest()
         speed = speedtest.download()
+        return speed
     if (speed == 0):
         start = time.clock()
         r = requests.get(config['url'], stream = False, timeout=1)
